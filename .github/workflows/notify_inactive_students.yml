@@ -1,0 +1,29 @@
+name: Notify Inactive Students
+
+on:
+  schedule:
+    - cron: '0 23 * * *'  # JSTで毎朝8時（UTC23時）
+  workflow_dispatch:  # 手動実行も可能
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run script
+        env:
+          NYUTAI_TOKEN: ${{ secrets.NYUTAI_TOKEN }}
+          CHATWORK_TOKEN: ${{ secrets.CHATWORK_TOKEN }}
+          CHATWORK_ROOM_ID: ${{ secrets.CHATWORK_ROOM_ID }}
+        run: |
+          python check_inactive_students.py
